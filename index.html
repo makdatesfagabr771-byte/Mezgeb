@@ -182,6 +182,62 @@ var X2 = {
     pinBad:'ፒን ከ4 እስከ 6 ቁጥር መሆን አለበት', recNeed:'የማስታወሻ ቃል ያስገቡ', summaryHint:'የዛሬውን ማጠቃለያ ለባለቤቱ ይላኩ።', ownerPin:'የባለቤት ፒን', keepRec:'የማስታወሻ ቃል (ለማቆየት ባዶ ይተዉ)', noItemsEmp:'ዕቃ የለም። ባለቤቱ ዕቃ እንዲጨምር ይጠይቁ።', expiredCount:'{n} አብቅተዋል', soonCount:'በ{d} ቀናት ውስጥ የሚያበቁ {n}', warnT:'ከማብቃቱ በፊት አስጠንቅቀኝ', days:'ቀናት', askExpired:'ጊዜው አልፏል። ለመሸጥ እንደገና ይንኩ።', scanBtn:'ስካን', scanSell:'በስካን ሽጥ', scanAim:'ካሜራውን ወደ ባርኮዱ ያዙሩ።', scanNoSupport:'የዚህ ስልክ ብሮውዘር ስካን ማድረግ አይችልም። የባርኮዱን ቁጥር ከታች ይጻፉ።', scanDenied:'ካሜራ አልተፈቀደም። በብሮውዘር ቅንብር ካሜራን ይፍቀዱ፣ ወይም ቁጥሩን ከታች ይጻፉ።', scanClose:'ዝጋ', barcode:'ባርኮድ (አማራጭ)', typeCode:'ወይም የባርኮዱን ቁጥር ይጻፉ', scanOk:'እሺ', scanAdded:'ተጨምሯል', scanNotFound:'ይህ ባርኮድ ያለው ዕቃ የለም', scanAddNew:'እንደ አዲስ ዕቃ ጨምር', scanOwnerAsk:'ባለቤቱ ይህን ዕቃ እንዲጨምር ይጠይቁ።', barcodeUsed:'ይህ ባርኮድ ቀድሞ በዚህ ዕቃ ተይዟል:', cartTotal:'የጋሪ ጠቅላላ'}
 };
 Object.keys(X2).forEach(function(l){ for(var k in X2[l]) T[l][k] = X2[l][k]; });
+var X3 = {
+  en: {actTitle:'Activate Mezgeb', actSub:'Enter the activation code you received when you bought Mezgeb.', actLabel:'Activation code', actBtn:'Activate', actBad:'This code is not correct. Check it and try again.', actWait:'Too many tries. Wait 30 seconds.', actOk:'Activated. Thank you!', actContact:'No code? Call 0986 341 366.'},
+  am: {actTitle:'መዝገብን አንቃ', actSub:'መዝገብ ሲገዙ የተሰጠዎትን የማንቃት ኮድ ያስገቡ።', actLabel:'የማንቃት ኮድ', actBtn:'አንቃ', actBad:'ኮዱ ትክክል አይደለም። አይተው እንደገና ይሞክሩ።', actWait:'ብዙ ጊዜ ሞክረዋል። 30 ሰከንድ ይጠብቁ።', actOk:'ነቅቷል። አመሰግናለሁ!', actContact:'ኮድ የለም? 0986 341 366 ይደውሉ።'}
+};
+Object.keys(X3).forEach(function(l){ for(var k in X3[l]) T[l][k] = X3[l][k]; });
+
+/* ---- activation: each customer gets a one-time code. Only hashes of valid codes are stored here, never the codes. ---- */
+var ACT_KEY = 'mezgeb.act';
+var ACT_HASHES = ["dd7f027b16c59f113bcd","d21bc087761b72d33d6e","0ba7390f7611fa0108b4","dd832d62de3798a12f55","2dd640f76848359e76fd","210b9f919708389234cc","7334c995366324b88c38","5d464257d27a04df1983","661fd15eba81a8e2a33b","2afc86a2adffb50ca620","33bd8cb4510f188db9e3","c843ac7f23018a767312","d377e01e9e8bd93dad9f","d7c4aa99ec62903f84bd","f9cfccb522d38b1c3147","5058808ba050c718d807","67e535968b2ff2a873b1","acaf130f0c8c99778bf8","947de7d3fe447a18a441","a9bd01a1afeea047bebb","a3e306230324bacf91ea","f66df8d2f1a9deaa09a2","349824c4a877b21907e2","abfdc5d7858f5aec89e9","7c64a46a4b9c02f4b9c1","219abb04ae61a49a6ca0","b31128451867fdbd0b26","1526c905ed8705de22b2","a0b07d50a0159aa8a9c7","2ca29642b6f00c52f4ff","2bfa3cf3e7f4dc153ff8","b4e960a5219c9babbd82","152b0b9bc318f05a7f21","c6a7f971fb9fdba5a8a2","8509651a03faa2d52456","282555fda991ad4e3279","70c9a8e030abfd369e6d","64ee9b103d333c97a4f0","a8a6053e88aa41092ca5","00d02883976d14324539","dae79b6b5cb8e780f79d","6646ba5dfde45eac9536","5c15a81d18eb1b0cbab7","d1e46de90d0bd04483ab","7cd161e3d0db416bcc73","cdbc44b55f139b886841","bff07f368e15b2871a1b","1f712148e87251bf42dc","80de82725d9efe113245","864c8be13c40b5fc6ef1","4e8ff273fbda5aa9505d","1d45a04ed0485d797d4c","922410bcfb725c391266","355af516ad3e5c572929","54357101bc6a216ab8fa","6003547ae4e07e3ad0a8","61272a9627706f0dd95b","578936b8b13bd5e400fd","66d3e5535171b30cd007","a3b415beac5951dd7aeb","9b67d3a5f554e37d56a7","f49c0cf4e7eb17f1a847","887c0174f42fbfd91406","10e97f46115c844e7a6e","8c9eebbc9e623c54030a","1024338174ed3720a30f","d70dc7390223e253a684","606da63b5cd379c72d12","258cdb18a656ccc3a396","e7f13fd88398921550c2","a24a4d6ea3f125f6a1d1","cf53c10ab1f844fe95d4","4f5f38707c351f66686d","0aa73e13ca392975ec67","6ef81102012d90eea89e","f04f7243538ac5da7594","dee4e81e72f15915db20","a57fb65e3d6bb54c387e","7e271bfeb97d9ce28a33","fa6cd70b0f316bfbd609","cdd9c44b0dbd70a8121f","2e3d787b4ab51c22078c","a7bb0e445a249d43c963","72c74374a5b3ca77d282","2d2a60fbeacc8669dca3","eff62d084885af4c839d","52c7216ba1e565978953","b3a1fb3d73de71dcd001","ee170ab0d9d8289e5064","68545522acb4cf1885e1","4c6a03d82e9226532272","d1da6868f53c7b69d072","492344f1a81cf7af0453","1bfbaa2846290b8aaf14","b8e7fe644aee1864de6b","bbc842b1a345d922ba99","2727810bdde48bcc98bd","377fd0a4e6178e0899a7","da21882093853c26b1ac","635b67fe025bfedc613b"];
+var actMem = null;
+var SHA_C = (function(){
+  var k = [], h = [], c = 2, p = 0;
+  while(p < 64){
+    var pr = true; for(var d = 2; d * d <= c; d++){ if(c % d === 0){ pr = false; break; } }
+    if(pr){ k[p] = Math.floor((Math.pow(c, 1/3) % 1) * 4294967296); if(p < 8) h[p] = Math.floor((Math.pow(c, 1/2) % 1) * 4294967296); p++; }
+    c++;
+  }
+  return {k:k, h:h};
+})();
+function sha256hex(s){
+  var m = unescape(encodeURIComponent(s)), n = m.length, w = [], i;
+  for(i = 0; i < n; i++) w[i >> 2] |= m.charCodeAt(i) << (24 - (i % 4) * 8);
+  w[n >> 2] |= 0x80 << (24 - (n % 4) * 8);
+  var len = (((n + 8) >> 6) + 1) * 16;
+  for(i = 0; i < len; i++) if(w[i] === undefined) w[i] = 0;
+  w[len - 1] = n * 8;
+  var H = SHA_C.h.slice(), K = SHA_C.k;
+  function rr(x, a){ return (x >>> a) | (x << (32 - a)); }
+  for(var o = 0; o < len; o += 16){
+    var x = w.slice(o, o + 16), a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+    for(i = 0; i < 64; i++){
+      if(i >= 16){
+        var s0 = rr(x[i - 15], 7) ^ rr(x[i - 15], 18) ^ (x[i - 15] >>> 3), s1 = rr(x[i - 2], 17) ^ rr(x[i - 2], 19) ^ (x[i - 2] >>> 10);
+        x[i] = (x[i - 16] + s0 + x[i - 7] + s1) | 0;
+      }
+      var t1 = (h + (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + x[i]) | 0;
+      var t2 = ((rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+      h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+    }
+    H = [(H[0] + a) | 0, (H[1] + b) | 0, (H[2] + c) | 0, (H[3] + d) | 0, (H[4] + e) | 0, (H[5] + f) | 0, (H[6] + g) | 0, (H[7] + h) | 0];
+  }
+  return H.map(function(v){ return ('00000000' + (v >>> 0).toString(16)).slice(-8); }).join('');
+}
+function normCode(v){ return String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+function actHash(code){ return sha256hex('mezgeb-act:' + code).slice(0, 20); }
+function activated(){
+  if(!ACT_HASHES.length) return true;
+  if(actMem && ACT_HASHES.indexOf(actMem) >= 0) return true;
+  try{ var v = localStorage.getItem(ACT_KEY); return !!v && ACT_HASHES.indexOf(v) >= 0; }catch(e){ return false; }
+}
+function actView(){
+  return '<div style="display:flex;flex-direction:column;gap:14px;margin-top:14px"><form class="card" data-form="activate"><h2>' + T.en.actTitle + '</h2><h2>' + T.am.actTitle + '</h2>' +
+    '<p class="note">' + t('actSub') + '</p><label>' + t('actLabel') + '<input id="act-code" name="code" type="text" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="XXXXX-XXXXX" required></label>' +
+    (ui.actErr ? '<p class="note" style="color:var(--bad)">' + t('actBad') + '</p>' : '') +
+    '<button class="btn primary" type="submit">' + t('actBtn') + '</button></form><p class="note">' + t('actContact') + '</p></div>';
+}
 
 function hashStr(s){
   s = 'mezgeb:' + s;
@@ -746,6 +802,7 @@ var VIEWS = {sell:sellView, stock:stockView, owed:owedView, report:reportView, o
 function render(){
   $('appname').textContent = t('app');
   $('langbtn').textContent = S.lang === 'en' ? 'አማ' : 'EN';
+  if(!activated()){ $('bizbtn').hidden = true; $('view').innerHTML = actView(); $('tabbar').hidden = true; $('tabbar').innerHTML = ''; return; }
   if(locked() && ui.tab === 'report') ui.tab = 'owner';
   if(!locked() && ui.tab === 'owner') ui.tab = 'report';
   if(!isOwner()) ui.picking = false;
@@ -840,6 +897,18 @@ function act(a, d){
 function num(form, name){ var el = form.elements[name]; if(!el || el.value === '') return null; var v = parseFloat(el.value); return isNaN(v) ? null : v; }
 function submit(form){
   var kind = form.getAttribute('data-form'), id = form.getAttribute('data-id');
+  if(kind === 'activate'){
+    if(ui.actLock && Date.now() < ui.actLock){ toast(t('actWait')); return; }
+    var cv = normCode(form.elements.code.value);
+    if(cv.length === 10 && ACT_HASHES.indexOf(actHash(cv)) >= 0){
+      var hh = actHash(cv); actMem = hh; try{ localStorage.setItem(ACT_KEY, hh); }catch(e){}
+      ui.actErr = false; ui.actTries = 0; toast(t('actOk'));
+    } else {
+      ui.actErr = true; ui.actTries = (ui.actTries || 0) + 1;
+      if(ui.actTries >= 5){ ui.actLock = Date.now() + 30000; ui.actTries = 0; toast(t('actWait')); }
+    }
+    render(); return;
+  }
   if((kind === 'item' || kind === 'debt' || kind === 'ret') && !isOwner()){ toast(t('ownerOnly')); return; }
   if(kind === 'scanmanual'){ var mv = form.elements.code.value.trim(); if(mv){ gotCode(mv); form.elements.code.value = ''; } return; }
   if(kind === 'item'){
