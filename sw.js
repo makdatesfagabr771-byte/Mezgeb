@@ -1,5 +1,5 @@
 /* Offline support: cache the app files, and keep Google Fonts once seen. */
-var CACHE = 'mezgeb-v11';
+var CACHE = 'mezgeb-v12';
 var FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', function(e){
   e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(FILES); }).then(function(){ return self.skipWaiting(); }));
@@ -11,6 +11,8 @@ self.addEventListener('activate', function(e){
 });
 self.addEventListener('fetch', function(e){
   if(e.request.method !== 'GET') return;
+  var u = new URL(e.request.url);
+  if(u.origin !== self.location.origin && u.hostname.indexOf('fonts.g') !== 0) return;
   e.respondWith(
     caches.match(e.request).then(function(hit){
       var net = fetch(e.request).then(function(res){
