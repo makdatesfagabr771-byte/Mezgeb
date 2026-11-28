@@ -428,8 +428,10 @@ function closeScanner(){
   $('scan').hidden = true; scan.onCode = null;
 }
 function gotCode(c){ try{ if(navigator.vibrate) navigator.vibrate(60); }catch(e){} if(scan.onCode) scan.onCode(String(c).trim()); }
+function bcKey(c){ var s = String(c == null ? '' : c).trim(); return /^[0-9]+$/.test(s) ? s.replace(/^0+/, '') : s; }
+function sameBc(a, b){ return !!a && !!b && bcKey(a) === bcKey(b); }
 function addByBarcode(code){
-  var it = S.items.find(function(x){ return x.barcode && x.barcode === code; });
+  var it = S.items.find(function(x){ return sameBc(x.barcode, code); });
   if(!it) return null;
   if(expState(it) === 'bad' && ui.expAsk !== it.id){ ui.expAsk = it.id; return {item:it, added:false}; }
   ui.expAsk = null;
@@ -452,7 +454,7 @@ function sellScanCode(code){
 function startScanAdd(){
   openScanner(function(code){
     closeScanner(); ui.tab = 'stock';
-    var known = S.items.find(function(x){ return x.barcode && x.barcode === code; });
+    var known = S.items.find(function(x){ return sameBc(x.barcode, code); });
     if(known){ ui.chain = false; ui.edit = known.id; ui.addOpen = false; ui.newBarcode = ''; render(); toast(t('scanKnown') + known.name); return; }
     ui.newBarcode = code; ui.addOpen = true; ui.edit = null; ui.chain = true; render();
     try{ window.scrollTo(0, 0); }catch(e){}
@@ -1111,7 +1113,7 @@ function submit(form){
     if(!name || price === null) { toast(t('fix')); return; }
     var rec = {name:name, price:price, cost:num(form,'cost'), qty:num(form,'qty') || 0, low:num(form,'low') === null ? 5 : num(form,'low'),
       unit:form.elements.unit ? form.elements.unit.value : 'piece', expiry:form.elements.expiry ? form.elements.expiry.value : '', track:form.elements.track ? form.elements.track.checked : true, barcode:form.elements.barcode ? form.elements.barcode.value.trim() : ''};
-    if(rec.barcode){ var dup = S.items.find(function(x){ return x.barcode === rec.barcode && x.id !== id; }); if(dup){ toast(t('barcodeUsed') + ' ' + dup.name); return; } }
+    if(rec.barcode){ var dup = S.items.find(function(x){ return sameBc(x.barcode, rec.barcode) && x.id !== id; }); if(dup){ toast(t('barcodeUsed') + ' ' + dup.name); return; } }
     if(id){ var it = S.items.find(function(x){ return x.id === id; }); if(it){ it.name = rec.name; it.price = rec.price; it.cost = rec.cost; it.qty = rec.qty; it.low = rec.low; it.unit = rec.unit; it.expiry = rec.expiry; it.track = rec.track; it.barcode = rec.barcode; } }
     else S.items.push({id:uid(), name:rec.name, price:rec.price, cost:rec.cost, qty:rec.qty, low:rec.low, unit:rec.unit, expiry:rec.expiry, track:rec.track, barcode:rec.barcode});
     var chainNext = ui.chain && !id; ui.edit = null; ui.addOpen = false; ui.newBarcode = ''; save(); render(); if(chainNext) setTimeout(startScanAdd, 300); else ui.chain = false; return;
@@ -1160,7 +1162,7 @@ document.addEventListener('click', function(e){
 document.addEventListener('keydown', function(e){
   if(e.key === 'Enter' && e.target && e.target.id === 'search'){
     var code = e.target.value.trim();
-    if(code && S.items.some(function(x){ return x.barcode === code; })){
+    if(code && S.items.some(function(x){ return sameBc(x.barcode, code); })){
       e.preventDefault(); var r = addByBarcode(code);
       if(r && r.added){ ui.q = ''; e.target.value = ''; $('gridbox').innerHTML = gridHtml(); toast(t('scanAdded') + ': ' + r.item.name); }
       else if(r){ toast(t('askExpired')); }
