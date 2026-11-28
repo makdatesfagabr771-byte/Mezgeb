@@ -68,6 +68,11 @@ select:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
 .scanrow{display:flex; gap:10px; align-items:stretch}
 .scanrow .btn{display:flex; align-items:center; gap:6px; flex:none}
 .btn.primary:has(svg){display:flex; align-items:center; justify-content:center; gap:8px}
+.buys{display:flex; flex-direction:column; gap:6px; margin-top:8px; padding-top:8px; border-top:1px dashed var(--line)}
+.buy{display:flex; gap:10px; align-items:baseline; font-size:14px}
+.buy .bd{color:var(--muted); flex:none; min-width:52px}
+.buy .bl{flex:1; min-width:0; overflow-wrap:anywhere}
+.buy .bt{font-weight:600; flex:none}
 .btn svg{width:20px; height:20px; flex:none; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
 .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px}
 .tile{display:flex; flex-direction:column; align-items:flex-start; gap:4px; text-align:left; min-height:92px; padding:12px; border-radius:14px; border:1px solid var(--line); background:var(--surface); color:var(--ink); min-width:0}
@@ -500,7 +505,7 @@ function voidSale(id){
   if(s.credit){
     var key = s.credit.toLowerCase();
     var d = S.debts.find(function(x){ return x.customer.toLowerCase() === key; });
-    if(d){ d.amount = Math.max(0, d.amount - s.total); tidyDebts(); }
+    if(d){ d.amount = Math.max(0, d.amount - s.total); d.buys = (d.buys || []).filter(function(b){ return b.sid !== s.id; }); tidyDebts(); }
   }
   save(); return true;
 }
@@ -758,7 +763,7 @@ function clearExamples(){
 /* ---- logic ---- */
 function normDebts(o){
   o.debts = o.debts || [];
-  o.debts.forEach(function(d){ d.amount = +d.amount || 0; d.goods = Array.isArray(d.goods) ? d.goods : []; });
+  o.debts.forEach(function(d){ d.amount = +d.amount || 0; d.goods = Array.isArray(d.goods) ? d.goods : []; d.buys = Array.isArray(d.buys) ? d.buys : []; });
 }
 function tidyDebts(){ S.debts = S.debts.filter(function(d){ return d.amount > 0 || d.goods.length > 0; }); }
 function stockMatch(name){
@@ -811,8 +816,13 @@ function completeSale(customer){
     if(tracked(it)) it.qty = Math.max(0, (+it.qty||0) - c.qty);
   });
   if(!lines.length) return 0;
-  S.sales.push({id:uid(), ts:Date.now(), lines:lines, total:total, credit:customer||null});
-  if(customer) addDebt(customer, total);
+  var sid = uid(), now = Date.now();
+  S.sales.push({id:sid, ts:now, lines:lines, total:total, credit:customer||null});
+  if(customer){
+    var dd = addDebt(customer, total);
+    dd.buys = dd.buys || [];
+    dd.buys.push({sid:sid, ts:now, total:total, due:total, lines:lines.map(function(l){ return {name:l.name, qty:l.qty, price:l.price}; })});
+  }
   ui.cart = []; save();
   return total;
 }
@@ -822,6 +832,9 @@ function receivePayment(id, amount){
   var a = Math.min(+amount||0, d.amount);
   if(!(a > 0)) return false;
   d.amount -= a;
+  var left = a;
+  (d.buys || []).forEach(function(b){ if(left > 0){ var u = Math.min(left, b.due); b.due -= u; left -= u; } });
+  d.buys = (d.buys || []).filter(function(b){ return b.due > 0.005; });
   S.pay.push({id:uid(), ts:Date.now(), customer:d.customer, amount:a});
   if(d.amount < 0.005) d.amount = 0;
   tidyDebts();
@@ -940,12 +953,17 @@ function owedView(){
           '<input id="ret-' + g.id + '" name="rq" type="number" inputmode="decimal" min="0" step="any" value="' + g.qty + '" required></label>' +
           '<button class="btn primary" type="submit">' + t('save') + '</button><button class="btn" type="button" data-act="retclose">' + t('cancel') + '</button></form>' : '') + '</div>';
     }).join('');
+    var buys = (d.buys || []).map(function(b){
+      var dt = new Date(b.ts).toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+      return '<div class="buy"><span class="bd">' + esc(dt) + '</span><span class="bl">' + b.lines.map(function(l){ return esc(l.name) + ' \u00d7 ' + money(l.qty); }).join(', ') + '</span><span class="bt">' + money(b.due) + '</span></div>';
+    }).join('');
     return '<div class="debt"><div class="top"><div class="meta"><div class="nm">' + esc(d.customer) + '</div>' +
       (d.amount > 0 ? '<div class="sub">' + money(d.amount) + ' ' + t('birr') + '</div>' : '') + '</div>' +
       '<div class="btns">' + (d.amount > 0 && !payOpen ? '<button class="btn small" type="button" data-act="payopen" data-id="' + d.id + '">' + t('receive') + '</button>' : '') +
       (isOwner() ? '<button class="btn small" type="button" data-act="debtfor" data-id="' + d.id + '">' + t('addItemTo') + '</button>' : '') + '</div></div>' +
       (payOpen ? '<form data-form="pay" data-id="' + d.id + '" class="row" style="width:100%"><label>' + t('amount') + '<input id="pay-' + d.id + '" name="amt" type="number" inputmode="decimal" min="0" step="any" value="' + d.amount + '" required></label>' +
         '<button class="btn primary" type="submit">' + t('save') + '</button><button class="btn" type="button" data-act="payclose">' + t('cancel') + '</button></form>' : '') +
+      (buys ? '<div class="buys">' + buys + '</div>' : '') +
       (goods ? '<div class="glist">' + goods + '</div>' : '') + '</div>';
   }).join('');
   var custNames = S.debts.map(function(d){ return '<option value="' + esc(d.customer) + '">'; }).join('');
